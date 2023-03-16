@@ -48,33 +48,28 @@
 
 <script>
 import { computed, ref } from 'vue';
-import {
-  format,
-  startOfMonth,
-  addMonths,
-  addDays,
-  eachWeekOfInterval,
-  eachDayOfInterval,
-  startOfWeek,
-  isSameMonth,
-  isSameYear,
-} from 'date-fns';
+import { format, startOfMonth, addMonths, addDays, eachWeekOfInterval, eachDayOfInterval, startOfWeek } from 'date-fns';
 import locale from 'date-fns/locale/es/index';
-import { generateRandomEvents } from '@/events-data.js';
 import arrowRight from 'bootstrap-icons/icons/arrow-right.svg';
 import arrowLeft from 'bootstrap-icons/icons/arrow-left.svg';
 
 export default {
   name: 'TheCalendarGrid',
 
-  emits: ['click-date'],
+  props: {
+    events: {
+      type: Array,
+      default: () => [],
+    },
+  },
+
+  emits: ['update:selectedDate'],
 
   setup(props, { attrs, emit, slots, expose }) {
     const date = ref(new Date());
-    const events = generateRandomEvents();
+    const events = [...props.events];
     const formattedMonth = computed(() => format(date.value, 'MMMM yyyy'));
     const selectedDay = ref(null);
-
     const weeks = computed(() => {
       const firstDayOfMonth = startOfMonth(date.value);
       const lastDayOfMonth = addMonths(firstDayOfMonth, 1);
@@ -93,111 +88,52 @@ export default {
 
       return weeksInTheMonth.map((week) => eachDayOfInterval({ start: week, end: addDays(week, 6) }));
     });
-
-    const previousMonth = () => {
-      date.value = addMonths(date.value, -1);
-    };
-
-    const nextMonth = () => {
-      date.value = addMonths(date.value, 1);
-    };
-
-    const hasEvent = (day) => {
-      const date = format(day, 'yyyy-MM-dd');
-
-      return events.some((event) => event.date === date);
-    };
-
-    const eventsOfTheDate = (day) => {
-      const date = format(day, 'yyyy-MM-dd');
-
-      return events.filter((event) => event.date === date);
-    };
-
-    const isToday = (day) => {
-      if (!day) {
+    const previousMonth = () => (date.value = addMonths(date.value, -1));
+    const nextMonth = () => (date.value = addMonths(date.value, 1));
+    const hasEvent = (date) => events.some((event) => event.date === format(date, 'yyyy-MM-dd'));
+    const isInCurrentMonth = computed(() => formattedMonth.value === format(new Date(), 'MMMM yyyy'));
+    const isToday = (date) => {
+      if (!date) {
         return false;
       }
 
       const today = format(new Date(), 'yyyy-MM-dd');
-      const date = format(day, 'yyyy-MM-dd');
+      const day = format(date, 'yyyy-MM-dd');
 
-      return today === date;
+      return today === day;
     };
-
-    const isInCurrentMonth = computed(() => formattedMonth.value === format(new Date(), 'MMMM yyyy'));
-
     const isInMonth = (day) => {
       const firstDayOfMonth = startOfMonth(date.value);
       const lastDayOfMonth = addMonths(firstDayOfMonth, 1);
 
       return day >= firstDayOfMonth && day < lastDayOfMonth;
     };
-
     const isSelected = (day) => selectedDay.value === day;
     const formattedDay = (day) => format(day, 'dd');
     const goToday = () => (date.value = new Date());
 
-    const getFutureEvents = (day) => {
-      return events
-        .filter((event) => new Date(event.date) >= new Date(day))
-        .sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-
-          return dateA.getTime() - dateB.getTime();
-        });
+    const onDateClick = (date) => {
+      selectedDay.value = date;
+      emit('update:selectedDate', date);
     };
-
-    const getMonthEvents = (day) => {
-      return events
-        .filter((event) => {
-          const eventDate = new Date(event.date);
-          const date = new Date(day);
-
-          return (
-            isSameMonth(eventDate, date) && isSameYear(eventDate, date) && eventDate >= startOfMonth(date)
-          );
-        })
-        .sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-
-          return dateA.getTime() - dateB.getTime();
-        });
-    };
-
-    const onDateClick = (day) => {
-      const date = format(day, 'EEEE MMMM d, yyyy'); // Wednesday March 15, 2023
-      const selectedDateEvents = eventsOfTheDate(day);
-      // const futureEvents = events.filter((event) => new Date(event.date) >= new Date(day));
-      const futureEvents = getFutureEvents(day);
-      selectedDay.value = day;
-
-      emit('click-date', { date, eventsOfTheDate: selectedDateEvents, futureEvents });
-    };
-
-    onDateClick(date.value);
 
     return {
       date,
       formattedMonth,
-      events,
       weeks,
+      selectedDay,
+      isInCurrentMonth,
       arrowRight,
       arrowLeft,
       previousMonth,
       nextMonth,
       hasEvent,
-      eventsOfTheDate,
       isToday,
       isInMonth,
       formattedDay,
       onDateClick,
       isSelected,
       goToday,
-      selectedDay,
-      isInCurrentMonth,
     };
   },
 };
@@ -205,7 +141,7 @@ export default {
 
 <style scoped>
 .calendar-container {
-  min-height: 625px;
+  min-height: 560px;
 }
 
 .today {

@@ -1,4 +1,4 @@
-import { addDays, format } from 'date-fns';
+import { startOfDay, add, addDays, format } from 'date-fns';
 
 export const EVENTS = [
   {
@@ -25,8 +25,7 @@ export const EVENTS = [
     event_id: '5',
     date: '2023-03-15',
     title: 'Evento 5',
-    description:
-      'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+    description: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
   },
   {
     event_id: '6',
@@ -38,8 +37,7 @@ export const EVENTS = [
     event_id: '7',
     date: '2023-03-20',
     title: 'Evento 7',
-    description:
-      'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
+    description: 'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
   },
   {
     event_id: '8',
@@ -71,7 +69,6 @@ export const generateRandomEvents = (amount = 20) => {
 };
 
 /**
- *
  * @param {number} minValue
  * @param {number} maxValue
  * @return {number}
@@ -107,12 +104,22 @@ const generateRandomEvent = () => {
     'Nulla facilisi. Donec vel odio velit.',
   ];
   const randomTitle = titles[Math.floor(Math.random() * titles.length)];
-  const randomDescription =
-    Math.random() < 0.5 ? '' : descriptions[Math.floor(Math.random() * descriptions.length)];
+  const randomDescription = Math.random() < 0.5 ? '' : descriptions[Math.floor(Math.random() * descriptions.length)];
 
   return {
     title: randomTitle,
     description: randomDescription,
     date: generateRandomDate(),
+    time: generateRandomTime(),
   };
+};
+
+const generateRandomTime = (startDayAt = 10, hoursDifference = 12) => {
+  // Set the start of the day to be 10:00 AM
+  const start = add(startOfDay(new Date()), { hours: startDayAt });
+  const randomHoursDifference = Math.floor(Math.random() * hoursDifference);
+  const time = add(start, { hours: randomHoursDifference });
+
+  return format(time, 'hh:mm');
+  // return time;
 };

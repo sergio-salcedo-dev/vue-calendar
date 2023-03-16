@@ -1,8 +1,11 @@
 <template>
   <article class="card">
-    <div class="card-body d-flex flex-column justify-content-between">
-      <h5 class="card-title text-capitalize text-center h4">{{ event.title }}</h5>
-      <p class="card-title text-capitalize text-center">{{ event.date }}</p>
+    <div class="card-body d-flex flex-column justify-content-between align-items-center">
+      <h5 class="card-title text-capitalize text-center h4 mb-3">{{ event.title }}</h5>
+      <p class="d-flex flex-column align-items-center">
+        <span>{{ event.date }}</span>
+        <span>{{ event.time }}h</span>
+      </p>
       <p v-if="event.description" class="card-text p-3 mb-0">{{ event.description }}</p>
       <div class="d-flex justify-content-center mt-4">
         <button class="btn btn-success">Register</button>
@@ -34,6 +37,6 @@ export default {
 
 <style scoped>
 .card {
-  min-height: 280px;
+  min-height: 320px;
 }
 </style>

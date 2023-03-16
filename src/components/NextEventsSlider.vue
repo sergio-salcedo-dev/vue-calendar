@@ -1,5 +1,5 @@
 <template>
-  <section class="d-flex flex-column justify-content-center align-items-center">
+  <section class="d-flex flex-column align-items-center">
     <header class="h2 m-0">Next Events</header>
     <section class="carousel-wrapper">
       <Swiper
@@ -11,20 +11,18 @@
         :initial-slide="0"
         :coverflow-effect="{
           rotate: 50,
-          // rotate: 0,
           stretch: 0,
           depth: 100,
-          // modifier: 0,
-          modifier: 1,
-          // slideShadows: true,
+          modifier: 0,
+          // modifier: 1,
           slideShadows: false,
         }"
         :pagination="{ clickable: true }"
         :modules="modules"
-        class="mySwiper"
+        class="my-swiper"
       >
-        <SwiperSlide v-for="(item, index) in eventList" :key="index">
-          <EventItem :item="item"></EventItem>
+        <SwiperSlide v-for="item in eventList" :key="item.event_id">
+          <EventItem :item="item" />
         </SwiperSlide>
       </Swiper>
     </section>
@@ -67,22 +65,16 @@ export default {
 </script>
 
 <style scoped>
-.carousel-wrapper {
-  /*width: 75%;*/
+.my-swiper {
   max-width: 940px;
-}
-
-.swiper {
   width: 100%;
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
 
 .swiper-slide {
-  background-position: center;
-  background-size: cover;
   width: 300px;
-  height: 300px;
+  height: 340px;
 }
 
 .swiper-slide img {

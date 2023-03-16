@@ -5,8 +5,10 @@
       <p class="h3 my-4 text-secondary text-capitalize">{{ eventsOfTheDate?.length }} events</p>
       <ul class="list-unstyled d-flex justify-content-center align-items-center flex-column">
         <li v-for="event in eventsOfTheDate" :key="event.event_id" class="alert alert-primary m-2 app-w-fit">
-          <span class="fw-bold">{{ event.title }}</span
-          >{{ event.description && `: ${event.description}` }}
+          <span class="fw-bold">{{ event.title }}</span>
+          <span>&nbsp;({{ event.time }}h)</span>
+          <span>{{ event.description && `: ${event.description}` }}</span>
+          <button class="btn btn-primary btn-small ms-3">Register</button>
         </li>
       </ul>
     </template>
